@@ -10,16 +10,13 @@ import com.zx.rx.module.BodyResponse;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.HttpException;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by zx on 2017/4/20.
@@ -27,8 +24,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClient {
     private static long DEFAULTE_TIMEOUT = 30;
+    private Retrofit retrofit;
 
-    public static Retrofit getRetrofit() {
+    private RetrofitClient() {
 
         Gson gson = new GsonBuilder()
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:sss")
@@ -48,34 +46,36 @@ public class RetrofitClient {
                 .connectTimeout(DEFAULTE_TIMEOUT, TimeUnit.SECONDS)
                 .retryOnConnectionFailure(true).build();
 
-        return new Retrofit.Builder()
+         retrofit = new Retrofit.Builder()
                 .client(client)
                 .baseUrl(Config.API_HOST)
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io()))
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
 
     }
 
 
-
-
-    public static class ErrorHandler {
-
-        public static BodyResponse handle(Throwable throwable) {
-            if (throwable instanceof HttpException) {
-                HttpException error = (HttpException) throwable;
-                try {
-                    return new Gson().fromJson(error.response().errorBody().string(),
-                            BodyResponse.class);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                throwable.printStackTrace();
-            }
-            return null;
-        }
+    private static class SingletonHolder{
+        private static final RetrofitClient INSTANCE = new RetrofitClient();
     }
+    /**
+     * 获取RetrofitServiceManager
+     * @return
+     */
+    public static RetrofitClient getInstance(){
+        return SingletonHolder.INSTANCE;
+    }
+    /**
+     * 获取对应的Service
+     * @param service Service 的 class
+     * @param <T>
+     * @return
+     */
+    public <T> T create(Class<T> service){
+        return retrofit.create(service);
+    }
+
+
 
 }

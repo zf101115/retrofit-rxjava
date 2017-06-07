@@ -11,8 +11,9 @@ import com.zx.rx.AreaAdapter;
 import com.zx.rx.R;
 import com.zx.rx.module.Area;
 import com.zx.rx.module.BodyResponse;
-import com.zx.rx.service.BaseObserver;
 import com.zx.rx.service.AreaService;
+import com.zx.rx.service.BaseObserver;
+import com.zx.rx.service.RetrofitClient;
 
 import java.util.List;
 
@@ -47,8 +48,7 @@ public class AreaListActivity extends AppCompatActivity {
 
     @OnClick(R.id.action)
     public void action(){
-        AreaService.getDataApi().getAreas()
-                .subscribeOn(Schedulers.io())
+        RetrofitClient.getInstance().create(AreaService.class).getAreas()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new BaseObserver<List<Area>>() {
                     @Override
@@ -58,7 +58,7 @@ public class AreaListActivity extends AppCompatActivity {
 
                     @Override
                     public void onError(BodyResponse resetBody) {
-                        Toast.makeText(AreaListActivity.this, resetBody.getStatus()+"", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AreaListActivity.this, resetBody.getMessage()+"", Toast.LENGTH_SHORT).show();
                     }
                 });
     }

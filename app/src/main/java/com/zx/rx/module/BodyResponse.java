@@ -5,22 +5,28 @@ package com.zx.rx.module;
  */
 
 public class BodyResponse {
-    protected Integer status;
-    protected String detail;
+    protected Integer code;
+    protected String message;
 
-    public Integer getStatus() {
-        return status;
+    public BodyResponse(Integer status,String detail){
+        this.code = status;
+        this.message = detail;
+
     }
 
-    public void setStatus(Integer status) {
-        this.status = status;
+    public Integer getCode() {
+        return code;
     }
 
-    public String getDetail() {
-        return detail;
+    public void setCode(Integer code) {
+        this.code = code;
     }
 
-    public void setDetail(String detail) {
-        this.detail = detail;
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }
