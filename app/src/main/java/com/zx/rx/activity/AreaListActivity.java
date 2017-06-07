@@ -5,12 +5,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.zx.rx.AreaAdapter;
 import com.zx.rx.R;
 import com.zx.rx.module.Area;
+import com.zx.rx.module.BodyResponse;
 import com.zx.rx.service.BaseObserver;
-import com.zx.rx.service.AreaApi;
+import com.zx.rx.service.AreaService;
 
 import java.util.List;
 
@@ -45,18 +47,18 @@ public class AreaListActivity extends AppCompatActivity {
 
     @OnClick(R.id.action)
     public void action(){
-        AreaApi.getDataApi().getAreas()
+        AreaService.getDataApi().getAreas()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new BaseObserver<List<Area>>() {
                     @Override
-                    public void onNext(List<Area> areas) {
+                    public void onSuccess(List<Area> areas) {
                         mAdapter.setItems(areas);
                     }
 
                     @Override
-                    public void onError(Throwable e) {
-                        super.onError(e);
+                    public void onError(BodyResponse resetBody) {
+                        Toast.makeText(AreaListActivity.this, resetBody.getStatus()+"", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
