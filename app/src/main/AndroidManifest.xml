@@ -9,15 +9,21 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.zx.rx.MainActivity">
+        <activity android:name="com.zx.rx.activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ShowActivity"
+        <activity android:name=".activity.ShowActivity"
             android:label="share"/>
+        <activity android:name=".activity.AreaListActivity"
+            android:label="地区列表"/>
+        <activity android:name=".activity.SvgActivity"
+            android:label="SVG"/>
+        <activity android:name=".activity.VoiceActivity"
+            android:label="语音转换"/>
     </application>
 
 </manifest>

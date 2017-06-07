@@ -6,6 +6,5 @@ package com.zx.rx;
 
 public class Config {
     public static final String API_HOST = "https://test.eyaos.com/";
-    public static final String BASE_URL = "https://api.github.com/users/";
 
 }
