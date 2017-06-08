@@ -20,6 +20,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -45,17 +46,18 @@ public class AreaListActivity extends AppCompatActivity {
         lv.startLayoutAnimation();
     }
 
-
+    Subscription subscription;
     @OnClick(R.id.action)
     public void action(){
-        RetrofitClient.getInstance().create(AreaService.class).getAreas()
+        Toast.makeText(AreaListActivity.this, "action", Toast.LENGTH_SHORT).show();
+
+        subscription = RetrofitClient.getInstance().create(AreaService.class).getAreas()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new BaseObserver<List<Area>>() {
                     @Override
                     public void onSuccess(List<Area> areas) {
                         mAdapter.setItems(areas);
                     }
-
                     @Override
                     public void onError(BodyResponse resetBody) {
                         Toast.makeText(AreaListActivity.this, resetBody.getMessage()+"", Toast.LENGTH_SHORT).show();
@@ -65,8 +67,20 @@ public class AreaListActivity extends AppCompatActivity {
 
     @OnClick(R.id.close)
     public void close(){
+        Toast.makeText(AreaListActivity.this, "close", Toast.LENGTH_SHORT).show();
 
+        if (null!=subscription&&!subscription.isUnsubscribed()){
+            subscription.unsubscribe();
+        }
 
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (null!=subscription&&!subscription.isUnsubscribed()){
+            subscription.unsubscribe();
+            Toast.makeText(AreaListActivity.this, "close", Toast.LENGTH_SHORT).show();
+        }
+    }
 }

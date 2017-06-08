@@ -24,6 +24,7 @@
             android:label="SVG"/>
         <activity android:name=".activity.VoiceActivity"
             android:label="语音转换"/>
+        <activity android:name=".activity.RxActivity"/>
     </application>
 
 </manifest>
