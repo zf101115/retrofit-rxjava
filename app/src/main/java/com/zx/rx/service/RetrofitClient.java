@@ -39,7 +39,7 @@ public class RetrofitClient {
          *     BODY 请求/响应行 + 头 + 体
          */
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-        logging.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(logging)
@@ -57,14 +57,26 @@ public class RetrofitClient {
 
 
     private static class SingletonHolder{
-        private static final RetrofitClient INSTANCE = new RetrofitClient();
+        private static RetrofitClient retrofitClient = null;
+
+        private SingletonHolder(){}
+        private static RetrofitClient getInstance(){
+            if (retrofitClient==null){
+                synchronized (RetrofitClient.class){
+                    if (retrofitClient==null){
+                        retrofitClient = new RetrofitClient();
+                    }
+                }
+            }
+            return retrofitClient;
+        }
     }
     /**
-     * 获取RetrofitServiceManager
+     * 获取RetrofitClient
      * @return
      */
     public static RetrofitClient getInstance(){
-        return SingletonHolder.INSTANCE;
+        return SingletonHolder.getInstance();
     }
     /**
      * 获取对应的Service

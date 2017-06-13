@@ -19,6 +19,11 @@ public class Area extends BaseBean {
     @SerializedName("prov_area")
     private Area provArea;
 
+    public Area(Integer id,String name){
+        this.id = id;
+        this.name = name;
+    }
+
     public Integer getId() {
         return id;
     }

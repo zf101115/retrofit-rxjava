@@ -2,6 +2,8 @@ package com.zx.rx.activity;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.widget.ListView;
@@ -53,14 +55,13 @@ public class AreaListActivity extends AppCompatActivity {
 
         subscription = RetrofitClient.getInstance().create(AreaService.class).getAreas()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new BaseObserver<List<Area>>() {
+                .subscribe(new BaseObserver<List<Area>>(AreaListActivity.this) {
                     @Override
                     public void onSuccess(List<Area> areas) {
                         mAdapter.setItems(areas);
                     }
                     @Override
                     public void onError(BodyResponse resetBody) {
-                        Toast.makeText(AreaListActivity.this, resetBody.getMessage()+"", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
