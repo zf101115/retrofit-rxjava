@@ -1,12 +1,12 @@
 package com.zx.rx.activity;
 
+
 import android.os.Bundle;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.zx.rx.R;
 import com.zx.rx.module.Area;
@@ -21,13 +21,9 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import rx.Observable;
-import rx.Observer;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Function;
 
 /**
  * Created by zx on 2017/6/8.
@@ -50,8 +46,8 @@ public class RxActivity extends AppCompatActivity {
     }
     @OnClick(R.id.button)
     public void click(){
-//        httpclick();
-        incache();
+        httpclick();
+//        incache();
     }
 
     List<Area> list;
@@ -59,20 +55,19 @@ public class RxActivity extends AppCompatActivity {
     private void incache() {
         list = new ArrayList<>();
         list.add(new Area(100, "火星"));
-//        for (int i=0;i<=2;i++){
 //
         final int[] i = {0};
             Observable.just("caCheKey","caCheKey","caCheKey")//cache key
-                    .map(new Func1<String, String>() {
+                    .map(new Function<String, String>() {
                         @Override
-                        public String call(String s) {
+                        public String apply(String s) throws Exception {
                             Log.e("zx===",
                                     Looper.myLooper() == Looper.getMainLooper() ? "主线程" : "子线程");
                             return "cache.getAsString(s)";//josn String
                         }
-                    }).flatMap(new Func1<String, Observable<List<Area>>>() {
+                    }).flatMap(new Function<String, Observable<List<Area>>>() {
                 @Override
-                public Observable<List<Area>> call(String s) {
+                public Observable<List<Area>> apply(String s) throws Exception {
                     if (null!= s ||!"".equals(s)) {
                         //网络请求
                         return RetrofitClient.getInstance().create(AreaService.class).getAreas();
@@ -81,7 +76,7 @@ public class RxActivity extends AppCompatActivity {
                         return Observable.just(list);
                     }
                 }
-            }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+            }).observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new BaseObserver<List<Area>>(RxActivity.this) {
                         @Override
                         public void onSuccess(List<Area> areas) {
@@ -102,25 +97,20 @@ public class RxActivity extends AppCompatActivity {
 
                         }
                     });
-
-
-//        }
-
     }
     private void httpclick() {
 
         RetrofitClient.getInstance().create(AreaService.class).getAreas()
-                .doOnNext(new Action1<List<Area>>() {
+//                .doOnNext(new Action<List<Area>>() {
+//                    @Override
+//                    public void call(List<Area> areas) {
+//                        Log.e("zx===", Looper.myLooper()==Looper.getMainLooper()?"主线程":"子线程");
+//                    }
+//                })
+                .flatMap(new Function<List<Area>, Observable<List<Area>>>() {
                     @Override
-                    public void call(List<Area> areas) {
-                        Log.e("zx===", Looper.myLooper()==Looper.getMainLooper()?"主线程":"子线程");
-                    }
-                })
-                .flatMap(new Func1<List<Area>, Observable<List<Area>>>() {
-                    @Override
-                    public Observable<List<Area>> call(List<Area> areas) {
-
-                     return RetrofitClient.getInstance().create(AreaService.class).getCityArea(areas.get(1).getId());
+                    public Observable<List<Area>> apply(List<Area> areas) throws Exception {
+                        return RetrofitClient.getInstance().create(AreaService.class).getCityArea(areas.get(1).getId());
 
                     }
                 })
@@ -134,5 +124,11 @@ public class RxActivity extends AppCompatActivity {
                     public void onError(BodyResponse resetBody) {
                     }
                 });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        BaseObserver.checkDispose();
     }
 }

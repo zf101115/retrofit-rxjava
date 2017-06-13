@@ -1,18 +1,20 @@
 package com.zx.rx.service;
+
+
 import android.content.Context;
 import android.net.ParseException;
+import android.util.Log;
+import android.view.Display;
 import android.widget.Toast;
 
 import com.google.gson.JsonParseException;
-import com.zx.rx.activity.AreaListActivity;
 import com.zx.rx.module.BodyResponse;
 
 import org.json.JSONException;
 
-
-import retrofit2.adapter.rxjava.HttpException;
-import rx.Observer;
-
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
+import retrofit2.HttpException;
 
 /**
  * Created by zx on 2017/6/7.
@@ -20,11 +22,26 @@ import rx.Observer;
 
 public abstract class BaseObserver<T> implements Observer<T> {
     private Context mContext;
+    private static Disposable disposable;
     public BaseObserver(Context mContext){
         this.mContext = mContext;
     }
+
     @Override
-    public void onCompleted() {}
+    public void onComplete() {
+
+    }
+
+    @Override
+    public void onSubscribe(Disposable d) {
+        disposable = d;
+    }
+
+    public static void checkDispose(){
+        if (!disposable.isDisposed()){
+            disposable.dispose();
+        }
+    }
     @Override
     public void onError(Throwable e) {
         BodyResponse bodyResponse;

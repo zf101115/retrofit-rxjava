@@ -4,9 +4,9 @@ import com.zx.rx.module.Area;
 
 import java.util.List;
 
+import io.reactivex.Observable;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
-import rx.Observable;
 
 /**
  * Created by zx on 2017/4/20.
