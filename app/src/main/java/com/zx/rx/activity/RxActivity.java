@@ -24,6 +24,7 @@ import butterknife.OnClick;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by zx on 2017/6/8.
@@ -46,8 +47,8 @@ public class RxActivity extends AppCompatActivity {
     }
     @OnClick(R.id.button)
     public void click(){
-        httpclick();
-//        incache();
+//        httpclick();
+        incache();
     }
 
     List<Area> list;
@@ -57,17 +58,18 @@ public class RxActivity extends AppCompatActivity {
         list.add(new Area(100, "火星"));
 //
         final int[] i = {0};
-            Observable.just("caCheKey","caCheKey","caCheKey")//cache key
+            Observable.just("caCheKey")//cache key
+                    .subscribeOn(Schedulers.io())
                     .map(new Function<String, String>() {
                         @Override
                         public String apply(String s) throws Exception {
-                            Log.e("zx===",
-                                    Looper.myLooper() == Looper.getMainLooper() ? "主线程" : "子线程");
+                            Log.e("zx===",Looper.myLooper() == Looper.getMainLooper() ? "主线程" : "子线程");
                             return "cache.getAsString(s)";//josn String
                         }
                     }).flatMap(new Function<String, Observable<List<Area>>>() {
                 @Override
                 public Observable<List<Area>> apply(String s) throws Exception {
+                    Log.e("zx===",Looper.myLooper() == Looper.getMainLooper() ? "主线程" : "子线程");
                     if (null!= s ||!"".equals(s)) {
                         //网络请求
                         return RetrofitClient.getInstance().create(AreaService.class).getAreas();
@@ -107,6 +109,7 @@ public class RxActivity extends AppCompatActivity {
 //                        Log.e("zx===", Looper.myLooper()==Looper.getMainLooper()?"主线程":"子线程");
 //                    }
 //                })
+                .subscribeOn(Schedulers.io())
                 .flatMap(new Function<List<Area>, Observable<List<Area>>>() {
                     @Override
                     public Observable<List<Area>> apply(List<Area> areas) throws Exception {

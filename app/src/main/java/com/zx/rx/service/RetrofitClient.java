@@ -35,7 +35,7 @@ public class RetrofitClient {
          *     BODY 请求/响应行 + 头 + 体
          */
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        logging.setLevel(HttpLoggingInterceptor.Level.NONE);
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(logging)
