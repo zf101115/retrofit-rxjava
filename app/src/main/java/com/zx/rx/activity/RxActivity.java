@@ -58,7 +58,7 @@ public class RxActivity extends AppCompatActivity {
         list.add(new Area(100, "火星"));
 //
         final int[] i = {0};
-            Observable.just("caCheKey")//cache key
+            Observable.just("caCheKey","caCheKey","caCheKey")//cache key
                     .subscribeOn(Schedulers.io())
                     .map(new Function<String, String>() {
                         @Override
